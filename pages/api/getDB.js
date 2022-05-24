@@ -28,8 +28,10 @@ export default (req, res) => {
   get(child(dbRef, `coordinates`)).then((snapshot) => {
     if (snapshot.exists()) {
       console.log(snapshot.val());
+      res.json({ message: snapshot.val() })
     } else {
       console.log("No data available");
+      res.json({ message: 'error' })
     }
   }).catch((error) => {
     console.error(error);
