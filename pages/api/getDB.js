@@ -23,7 +23,6 @@ const app = initializeApp(firebaseConfig);
 export default (req, res) => {
   res.statusCode = 200;
   
-
   const dbRef = ref(getDatabase(app));
 
   get(child(dbRef, `coordinates`)).then((snapshot) => {
