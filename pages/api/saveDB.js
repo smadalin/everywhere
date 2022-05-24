@@ -26,8 +26,8 @@ export default (req, res) => {
 
   const db = getDatabase(app);
   set(ref(db, 'coordinates'), {
-    from: "req.body.coordinates3",
-    to: "req.body.coordinates2",
+    from: req.body.coordinates3,
+    to: req.body.coordinates2
   });
 
   res.json({ message: 'success' })
