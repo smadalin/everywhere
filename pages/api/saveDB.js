@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+import { getFirestore, addDoc, collection } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -19,16 +19,30 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Saves a new message to Cloud Firestore.
+async function saveCoordinates(coordinates) {
+  // Add a new message entry to the Firebase database.
+  try {
+    await addDoc(collection(getFirestore(), 'coordinates'), {
+      from: "coordinates.from",
+      to: "coordinates.to"
+    });
+  }
+  catch(error) {
+    console.error('Error writing coordinates to Firebase Database', error);
+  }
+}
 
 export default (req, res) => {
   res.statusCode = 200;
   
 
-  const db = getDatabase(app);
-  set(ref(db, 'coordinates'), {
-    from: req.body.coordinates3,
-    to: req.body.coordinates2
+  saveCoordinates({from: req.body.from, to: req.body.to}).then(() => {
+    res.json({ message: 'success' })
+  })
+  .catch(error => {
+    console.error('Error writing coordinates to Firebase Database', error);
+    res.statusCode = 500;
+    res.json({ message: 'error' })
   });
-
-  res.json({ message: 'success' })
 }
