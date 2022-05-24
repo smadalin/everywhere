@@ -36,6 +36,4 @@ export default (req, res) => {
   }).catch((error) => {
     console.error(error);
   });
-
-  res.json({ message: 'success' })
 }
