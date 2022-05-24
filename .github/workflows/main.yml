@@ -21,6 +21,6 @@ jobs:
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'https://everywhere.vercel.app/api/hello'
+        url: 'https://everywhere.vercel.app/api/saveDB'
         method: 'POST'
         data: '{ "coordinates": [1,1], "coordinates2": [2,2] }'

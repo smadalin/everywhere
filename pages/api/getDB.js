@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, child, get } from "firebase/database";
+import { getDatabase, ref, get, child } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,10 +22,10 @@ const app = initializeApp(firebaseConfig);
 
 export default (req, res) => {
   res.statusCode = 200;
-  console.log(req)
+  
 
-  const db = getDatabase(app);
-  const dbRef = ref(getDatabase());
+  const dbRef = ref(getDatabase(app));
+
   get(child(dbRef, `coordinates`)).then((snapshot) => {
     if (snapshot.exists()) {
       console.log(snapshot.val());
