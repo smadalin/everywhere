@@ -24,8 +24,8 @@ async function saveCoordinates(coordinates) {
   // Add a new message entry to the Firebase database.
   try {
     await addDoc(collection(getFirestore(), 'coordinates'), {
-      from: "coordinates.from",
-      to: "coordinates.to"
+      from: coordinates.from,
+      to: coordinates.to
     });
   }
   catch(error) {
