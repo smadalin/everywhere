@@ -22,7 +22,7 @@ const app = initializeApp(firebaseConfig);
 
 export default (req, res) => {
   res.statusCode = 200;
-  console.log(req.data)
+  console.log(req)
 
   const db = getDatabase(app);
   const dbRef = ref(getDatabase());
