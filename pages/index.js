@@ -2,7 +2,9 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import DeckGL, { GeoJsonLayer, ArcLayer } from 'deck.gl';
+import data from "./data/data.json";
 
+console.log(data);
 // source: Natural Earth http://www.naturalearthdata.com/ via geojson.xyz
 const COUNTRIES =
     'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_scale_rank.geojson'; //eslint-disable-line
@@ -16,6 +18,7 @@ const INITIAL_VIEW_STATE = {
     bearing: 0,
     pitch: 0
 };
+
 
 
 export default function Home() {
@@ -34,14 +37,24 @@ export default function Home() {
                 />
                 <GeoJsonLayer
                     id="airports"
-                    data={AIR_PORTS}
+                    data={data}
                     filled={true}
                     pointRadiusMinPixels={2}
                     pointRadiusScale={2000}
                     getPointRadius={f => 11 - f.properties.scalerank}
-                    getFillColor={[256, 256, 256 , 180]}
+                    getFillColor={[255, 99, 71]}
                     pickable={true}
                     autoHighlight={true}
+                />
+                <ArcLayer
+                    id="arcs"
+                    data={data}
+                    dataTransform={d => d.features.filter(f => f.properties.scalerank < 4)}
+                    getSourcePosition={f => [-0.4531566, 51.4709959]}
+                    getTargetPosition={f => f.geometry.coordinates}
+                    getSourceColor={[0, 128, 200]}
+                    getTargetColor={[200, 0, 80]}
+                    getWidth={1}
                 />
             </DeckGL>
         </div>
