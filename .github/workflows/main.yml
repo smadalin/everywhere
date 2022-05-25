@@ -18,13 +18,12 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-    - name: get nested json property
-      id: get_nested_json_property
-      uses: notiz-dev/github-action-json-property@release
-      with:
-        path: './package.json'
-        prop_path: 'coordinates.from'
-    - run: echo ${{ steps.get_nested_json_property.outputs.prop }}
+      - id: set_var
+        run: |
+          content=`cat ./package.json`
+          echo "::set-output name=packageJson::$content"
+      - run: |
+          echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
