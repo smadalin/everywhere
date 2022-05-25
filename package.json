@@ -2,6 +2,10 @@
   "name": "everywhere",
   "version": "0.1.0",
   "private": true,
+  "coordinates": {
+    "from": [12,22],
+    "to": [33,55]
+},
   "scripts": {
     "dev": "next dev",
     "build": "next build",
