@@ -20,7 +20,7 @@ jobs:
     steps:
     - name: get nested json property
     - id: version
-      run: |
+    - run: |
         content=`cat ./package.json`
         echo "::set-output name=packageJson::$content"
     - name: Deploy Stage
