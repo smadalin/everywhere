@@ -19,12 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Read package.json
-      uses: dutscher/read-package-json-endpoint-actions@v1.33.7
-      id: package-json-endpoint
-
+    - name: Get package json
+    - id: set_var
+      run: |
+          content=`cat ./path/to/package.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=packageJson::$content"
     - name: Show version number
-      run: echo "${{ steps.package-json-endpoint.outputs.version }}"
+      run: echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
