@@ -19,12 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: get nested json property
-      id: version
-      uses: notiz-dev/github-action-json-property@release
-      with:
-        path: ./package.json
-        prop_path: 'version'
-    - run: echo ${{steps.version.outputs.prop}}
+    - id: version
+      run: |
+        content=`cat ./package.json`
+        echo "::set-output name=packageJson::$content"
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
