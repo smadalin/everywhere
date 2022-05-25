@@ -17,7 +17,8 @@
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "react-map-gl": "^7.0.12"
+    "react-map-gl": "^7.0.12",
+    "read-package-json-actions": "^1.0.0"
   },
   "devDependencies": {
     "firebase": "^9.8.1"
