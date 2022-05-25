@@ -20,9 +20,8 @@ jobs:
     steps:
     - name: get nested json property
       id: get_nested_json_property
-    - run: |
-        content=`cat ./package.json`
-        echo "::set-output name=packageJson::$content"
+      uses: content=`cat ./package.json`
+    - run: echo "::set-output name=packageJson::$content"
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
