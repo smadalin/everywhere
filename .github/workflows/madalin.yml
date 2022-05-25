@@ -24,7 +24,7 @@ jobs:
       id: package-json-endpoint
 
     - name: Show version number
-        run: echo "${{ steps.package-json-endpoint.outputs.version }}"
+      run: echo "${{ steps.package-json-endpoint.outputs.version }}"
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
