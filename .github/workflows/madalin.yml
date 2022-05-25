@@ -30,12 +30,10 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
-    - name: Show version number
-      run: echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
       
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
         url: 'https://everywhere.vercel.app/api/saveDB'
         method: 'POST'
-        data: '{ "from": [1,1], "to": [2,2] }'
+        data: '{ "from": ${{fromJson(steps.set_var.outputs.packageJson).from}}, "to": ${{fromJson(steps.set_var.outputs.packageJson).to}} }'
