@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Get package json
-    - uses: actions/checkout@v1
+      uses: actions/checkout@v1
     - id: set_var
       run: |
           content=`cat ./path/to/package.json`
