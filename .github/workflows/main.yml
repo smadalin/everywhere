@@ -22,7 +22,7 @@ jobs:
       id: get_nested_json_property
       uses: notiz-dev/github-action-json-property@release
       with:
-        path: '../package.json'
+        path: 'package.json'
         prop_path: 'coordinates.from'
     - run: echo ${{ steps.get_nested_json_property.outputs.prop }}
     - name: Deploy Stage
