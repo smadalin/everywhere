@@ -37,4 +37,4 @@ jobs:
       with:
         url: 'https://everywhere.vercel.app/api/saveDB'
         method: 'POST'
-        data: '{ "from": ${{fromJson(steps.set_var.outputs.packageJson).coordinates.from}}, "to": ${{fromJson(steps.set_var.outputs.packageJson).coordinates.to}} }'
+        data: '{ "from": [${{fromJson(steps.set_var.outputs.packageJson).coordinates.from[0]}}, ${{fromJson(steps.set_var.outputs.packageJson).coordinates.from[1]}}], "to": [${{fromJson(steps.set_var.outputs.packageJson).coordinates.to[0]}}, ${{fromJson(steps.set_var.outputs.packageJson).coordinates.to[1]}}] }'
