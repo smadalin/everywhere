@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import ReactMapGL, {FullscreenControl, NavigationControl} from "react-map-gl";
-import DeckGL, { ArcLayer } from "deck.gl";
+import DeckGL, { ArcLayer} from "deck.gl";
+import {LineLayer} from '@deck.gl/layers';
 import "mapbox-gl/dist/mapbox-gl.css";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, onSnapshot, query } from "firebase/firestore";
@@ -98,25 +99,24 @@ export default function Home() {
         width: "100%"
     });
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic21hZGFsaW4iLCJhIjoiY2wzY3BjemRhMDBzbTNjbW9sdWc3cDg3YyJ9.wmPQQp-K_CjUVrtwdJPglQ';
+        const data = [
+            {sourcePosition: [-122.41669, 37.7853], targetPosition: [-122.41669, 37.781]}
+        ];
+        const layers = [
+            new LineLayer({id: 'line-layer', data})
+        ];
+
 
     return (
-        <div className={styles.container}>
-            <ReactMapGL
+            <div className={styles.container}>
+            <DeckGL
                 initialViewState={INITIAL_VIEW_STATE}
-                viewState={viewport}
-                onViewportChange={newViewport => setViewport(newViewport)}
-                mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-                mapStyle="mapbox://styles/mapbox/light-v9"
+                controller={true}
+                layers={layers}
                 style={{width: '100vw', height: '100vh'}}
             >
-                <FullscreenControl />
-                <NavigationControl />
-                <DeckGL
-                    viewState={viewState}
-                    style={{width: '100vw', height: '100vh'}}
-                    layers={[layer]}
-                />
-            </ReactMapGL>
+                <ReactMapGL mapStyle="mapbox://styles/mapbox/light-v9" style={{width: '100vw', height: '100vh'}} mapboxAccessToken={MAPBOX_ACCESS_TOKEN} />
+            </DeckGL>
         </div>
     )
 }
