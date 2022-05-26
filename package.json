@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "coordinates": {
-    "from": [26.3780, 46.9300],
+    "from": [27.3780, 26.9300],
     "to": [2.8904, 53.4862]
   },
   "scripts": {
