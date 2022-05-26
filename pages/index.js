@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import ReactMapGL from "react-map-gl";
-import DeckGL, { ArcLayer } from "deck.gl";
+import DeckGL, { GeoJsonLayer, ArcLayer } from "deck.gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, onSnapshot, query } from "firebase/firestore";
+import data2 from "./data/data.json";
 
+const COUNTRIES =
+    'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_admin_0_scale_rank.geojson'; //eslint-disable-line
+
+const AIR_PORTS =
+    'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_airports.geojson';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -23,15 +29,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const q = query(collection(db, "coordinates"));
-const unsubscribe = onSnapshot(q, (snapshot) => {
-    console.log(snapshot.docChanges().length)
-    snapshot.docChanges().forEach((change) => {
-
-        if (change.type === "added") {
-
-        }
-    });
-});
+let data = {
+    "type": "FeatureCollection",
+    "features": []
+};
+let points = {
+    "type": "FeatureCollection",
+    "features": []
+}
 
 
 const INITIAL_VIEW_STATE = {
@@ -42,46 +47,15 @@ const INITIAL_VIEW_STATE = {
     pitch: 0
 };
 
-const data = [
-    {
-        "flyFrom": "SIN",
-        "flyTo": "KUL",
-        "source": [103.989444, 1.359167],
-        "target": [101.714722, 2.745556]
-    },
-    {
-        "flyFrom": "KUL",
-        "flyTo": "LGK",
-        "source": [101.714722, 2.745556],
-        "target": [99.732222, 6.338611]
-    },
-    {
-        "flyFrom": "KUL",
-        "flyTo": "KUA",
-        "source": [101.714722, 2.745556],
-        "target": [103.209444, 3.780833]
-    },
-    {
-        "flyFrom": "KUL",
-        "flyTo": "TGG",
-        "source": [101.714722, 2.745556],
-        "target": [103.104722, 5.381389]
-    },
-    {
-        "flyFrom": "KUL",
-        "flyTo": "AOR",
-        "source": [101.714722, 2.745556],
-        "target": [100.400833, 6.194444]
-    },
-    {
-        "flyFrom": "KUL",
-        "flyTo": "KBR",
-        "source": [101.714722, 2.745556],
-        "target": [102.291111, 6.1675]
-    }
-];
-
-
+const layer = new ArcLayer({
+    id: "flight-arcs",
+    data: data,
+    getSourcePosition: d => d.geometry.coordinates[0],
+    getTargetPosition: d => d.geometry.coordinates[1],
+    getSourceColor: () => [255, 0, 0, 120],
+    getTargetColor: () => [0, 255, 0, 120],
+    getStrokeWidth: () => 2
+});
 
 
 export default function Home() {
@@ -89,30 +63,91 @@ export default function Home() {
         height: "100%",
         width: "100%"
     });
-    const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic21hZGFsaW4iLCJhIjoiY2wzY3BjemRhMDBzbTNjbW9sdWc3cDg3YyJ9.wmPQQp-K_CjUVrtwdJPglQ';
 
+    const dataRef = useRef(points);
+
+    const [, updateState] = React.useState();
+    const forceUpdate = useCallback(() => updateState({}), []);
+
+    useEffect(() => {
+        onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change, index) => {
+                if (change.type === "added") {
+                    points.features.push({
+                        "type": "Feature",
+                        "properties": {
+                            "color": [195, 70, 101],
+                            "size": "5"
+                        },
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [change.doc.data().to[0], change.doc.data().to[1]]
+                        }
+                    },
+                        {
+                            "type": "Feature",
+                            "properties": {
+                                "color": [255, 255, 255],
+                                "size": "2"
+                            },
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [change.doc.data().from[0], change.doc.data().from[1]]
+                            }
+                        })
+                    data.features.push({
+
+                        "type": "Feature",
+                        "properties": {
+                            "scalerank": 2
+                        },
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": []
+                        }
+
+                    });
+
+                    data.features[index].geometry.coordinates.push([change.doc.data().from[0], change.doc.data().from[1]]);
+                    data.features[index].geometry.coordinates.push([change.doc.data().to[0], change.doc.data().to[1]])
+
+                }
+            });
+            forceUpdate();
+            console.log(dataRef.current.features[0].geometry.coordinates[0])
+        })
+    }, []);
+
+    const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic21hZGFsaW4iLCJhIjoiY2wzY3BjemRhMDBzbTNjbW9sdWc3cDg3YyJ9.wmPQQp-K_CjUVrtwdJPglQ';
     return (
         <div className={styles.container}>
-            <ReactMapGL
-                viewState={viewport}
-                onViewportChange={newViewport => setViewport(newViewport)}
-                mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-                mapStyle="mapbox://styles/mapbox/light-v9"
-            >
-                <DeckGL
-                    layers={[
-                        new ArcLayer({
-                            id: "flight-arcs",
-                            data: data,
-                            getSourcePosition: d => d.source,
-                            getTargetPosition: d => d.target,
-                            getSourceColor: () => [255, 0, 0, 120],
-                            getTargetColor: () => [0, 255, 0, 120],
-                            getStrokeWidth: () => 2
-                        })
-                    ]}
-                />
-            </ReactMapGL>
+            {dataRef.current.features[0]?.geometry.coordinates[0] != null &&
+                <DeckGL controller={true} initialViewState={INITIAL_VIEW_STATE}>
+
+                    <GeoJsonLayer
+                        id="points"
+                        data={dataRef.current}
+                        filled={true}
+                        pointRadiusMinPixels={5}
+                        pointRadiusScale={2000}
+                        getPointRadius={f => 11 - f.properties.scalerank}
+                        getFillColor={f => f.properties.color}
+                        pickable={true}
+                        autoHighlight={true}
+                    />
+                    <ArcLayer
+                        id="arcs"
+                        data={data}
+                        dataTransform={d => d.features.filter(f => f.properties.scalerank < 4)}
+                        getSourcePosition={f => f.geometry.coordinates[0]}
+                        getTargetPosition={f => f.geometry.coordinates[1]}
+                        getSourceColor={[255, 255, 255]}
+                        getTargetColor={[195, 70, 101]}
+                        getWidth={2}
+                    />
+                    <ReactMapGL mapStyle="mapbox://styles/mapbox/light-v9" style={{ width: '100vw', height: '100vh' }} mapboxAccessToken={MAPBOX_ACCESS_TOKEN} />
+                </DeckGL>
+            }
         </div>
     )
 }

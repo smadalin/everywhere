@@ -70,7 +70,7 @@
        {
           "type":"Feature",
           "properties":{
-             "scalerank":9,
+             "scalerank":3,
              "type":"mid",
              "name":"Ahwaz",
              "abbrev":"AWZ",
