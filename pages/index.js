@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import ReactMapGL from "react-map-gl";
+import ReactMapGL, {FullscreenControl, NavigationControl} from "react-map-gl";
 import DeckGL, { ArcLayer } from "deck.gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { initializeApp } from "firebase/app";
@@ -33,13 +33,12 @@ const unsubscribe = onSnapshot(q, (snapshot) => {
     });
 });
 
-
 const INITIAL_VIEW_STATE = {
     latitude: 51.47,
     longitude: 0.45,
     zoom: 2,
     bearing: 0,
-    pitch: 0
+    pitch: 0,
 };
 
 const data = [
@@ -81,10 +80,19 @@ const data = [
     }
 ];
 
-
+const layer = new ArcLayer({
+    id: "flight-arcs",
+    data: data,
+    getSourcePosition: d => d.source,
+    getTargetPosition: d => d.target,
+    getSourceColor: () => [255, 0, 0, 120],
+    getTargetColor: () => [0, 255, 0, 120],
+    getStrokeWidth: () => 2
+  });
 
 
 export default function Home() {
+
     const [viewport, setViewport] = useState({
         height: "100%",
         width: "100%"
@@ -94,23 +102,19 @@ export default function Home() {
     return (
         <div className={styles.container}>
             <ReactMapGL
+                initialViewState={INITIAL_VIEW_STATE}
                 viewState={viewport}
                 onViewportChange={newViewport => setViewport(newViewport)}
-                mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+                mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
                 mapStyle="mapbox://styles/mapbox/light-v9"
+                style={{width: '100vw', height: '100vh'}}
             >
+                <FullscreenControl />
+                <NavigationControl />
                 <DeckGL
-                    layers={[
-                        new ArcLayer({
-                            id: "flight-arcs",
-                            data: data,
-                            getSourcePosition: d => d.source,
-                            getTargetPosition: d => d.target,
-                            getSourceColor: () => [255, 0, 0, 120],
-                            getTargetColor: () => [0, 255, 0, 120],
-                            getStrokeWidth: () => 2
-                        })
-                    ]}
+                    viewState={viewState}
+                    style={{width: '100vw', height: '100vh'}}
+                    layers={[layer]}
                 />
             </ReactMapGL>
         </div>
