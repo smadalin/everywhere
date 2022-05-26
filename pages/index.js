@@ -53,6 +53,8 @@ export default function Home() {
         width: "100%"
     });
 
+    const [dataref, setDataref] = useState({});
+
     const dataRef = useRef(points);
 
     const [, updateState] = React.useState();
@@ -103,6 +105,8 @@ export default function Home() {
                 }
             });
             forceUpdate();
+
+            setDataref(dataRef.current);
             console.log(dataRef.current)
         })
     }, []);
@@ -115,7 +119,7 @@ export default function Home() {
 
                     <GeoJsonLayer
                         id="points"
-                        data={dataRef.current}
+                        data={dataref}
                         filled={true}
                         pointRadiusMinPixels={5}
                         pointRadiusScale={2000}
