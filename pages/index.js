@@ -46,17 +46,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
 };
 
-const layer = new ArcLayer({
-    id: "flight-arcs",
-    data: data,
-    getSourcePosition: d => d.geometry.coordinates[0],
-    getTargetPosition: d => d.geometry.coordinates[1],
-    getSourceColor: () => [255, 0, 0, 120],
-    getTargetColor: () => [0, 255, 0, 120],
-    getStrokeWidth: () => 2
-});
-
-
 export default function Home() {
 
     const [viewport, setViewport] = useState({
@@ -114,7 +103,7 @@ export default function Home() {
                 }
             });
             forceUpdate();
-            console.log(dataRef.current.features[0].geometry.coordinates[0])
+            console.log(dataRef.current)
         })
     }, []);
 
