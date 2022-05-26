@@ -4,7 +4,7 @@
   "private": true,
   "coordinates": {
     "from": [26.3780, 46.9300],
-    "to": [1.8904, 52.4862]
+    "to": [2.8904, 53.4862]
   },
   "scripts": {
     "dev": "next dev",
