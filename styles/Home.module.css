@@ -7,6 +7,33 @@
   align-items: center;
 }
 
+.logo {
+  position: absolute;
+  z-index: 9999;
+  top: 75px;
+  left: 75px;
+  transform: rotate(-25deg);
+}
+.box {
+  position: absolute;
+  z-index: 9999;
+  left: -500px;
+  top: 100px;
+  padding: 10px 500px 10px 500px;
+  background: rgba(0,0,0,0.1);
+  transform: rotate(-25deg);
+}
+
+.box h1 {
+  font-size: 30px;
+  color: rgb(111, 0, 103);
+  font-weight: normal;
+  line-height: 100%;
+}
+.box h1 span {
+  color: rgb(7, 80, 133)
+}
+
 .main {
   padding: 5rem 0;
   flex: 1;

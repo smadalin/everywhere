@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import Head from 'next/head'
+
 import styles from '../styles/Home.module.css'
 import ReactMapGL from "react-map-gl";
 import DeckGL, { GeoJsonLayer, ArcLayer } from "deck.gl";
@@ -43,7 +43,7 @@ const INITIAL_VIEW_STATE = {
     longitude: 0.45,
     zoom: 2,
     bearing: 0,
-    pitch: 0,
+    pitch: 50,
 };
 
 export default function Home() {
@@ -61,11 +61,12 @@ export default function Home() {
     useEffect(() => {
         onSnapshot(q, (snapshot) => {
             snapshot.docChanges().forEach((change, index) => {
+                console.log(change.doc.data())
                 if (change.type === "added") {
-                    points.features.push({
+                    dataRef.current.features.push({
                         "type": "Feature",
                         "properties": {
-                            "color": [195, 70, 101],
+                            "color": [7, 80, 133],
                             "size": "5"
                         },
                         "geometry": {
@@ -76,7 +77,7 @@ export default function Home() {
                         {
                             "type": "Feature",
                             "properties": {
-                                "color": [255, 255, 255],
+                                "color": [111, 0, 103],
                                 "size": "2"
                             },
                             "geometry": {
@@ -99,10 +100,12 @@ export default function Home() {
 
                     data.features[index].geometry.coordinates.push([change.doc.data().from[0], change.doc.data().from[1]]);
                     data.features[index].geometry.coordinates.push([change.doc.data().to[0], change.doc.data().to[1]])
-
+                    forceUpdate();
                 }
+                forceUpdate();
             });
-            forceUpdate();
+            
+            console.log(points)
             console.log(dataRef.current)
         })
     }, []);
@@ -110,6 +113,12 @@ export default function Home() {
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic21hZGFsaW4iLCJhIjoiY2wzY3BjemRhMDBzbTNjbW9sdWc3cDg3YyJ9.wmPQQp-K_CjUVrtwdJPglQ';
     return (
         <div className={styles.container}>
+            <div className={styles.logo}>
+                <img src="https://osf.digital/library/media/osf/digital/common/header/osf_digital_logo.svg?h=60&la=en&w=366&hash=5FF21BA406E10D94D9778FA8A3A8AEC43C247D2B" />
+            </div>
+            <div className={styles.box}>
+                <h1>Work from Anywhere <span>Deliver Everywhere</span></h1>
+            </div>
             {dataRef.current.features[0]?.geometry.coordinates[0] != null &&
                 <DeckGL controller={true} initialViewState={INITIAL_VIEW_STATE}>
 
@@ -130,8 +139,8 @@ export default function Home() {
                         dataTransform={d => d.features.filter(f => f.properties.scalerank < 4)}
                         getSourcePosition={f => f.geometry.coordinates[0]}
                         getTargetPosition={f => f.geometry.coordinates[1]}
-                        getSourceColor={[255, 255, 255]}
-                        getTargetColor={[195, 70, 101]}
+                        getSourceColor={[111, 0, 103]}
+                        getTargetColor={[7, 80, 133]}
                         getWidth={2}
                     />
                     <ReactMapGL mapStyle="mapbox://styles/mapbox/light-v9" style={{ width: '100vw', height: '100vh' }} mapboxAccessToken={MAPBOX_ACCESS_TOKEN} />
