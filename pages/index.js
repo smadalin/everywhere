@@ -38,13 +38,12 @@ let points = {
     "features": []
 }
 
-
 const INITIAL_VIEW_STATE = {
     latitude: 51.47,
     longitude: 0.45,
     zoom: 2,
     bearing: 0,
-    pitch: 0
+    pitch: 0,
 };
 
 const layer = new ArcLayer({
@@ -59,6 +58,7 @@ const layer = new ArcLayer({
 
 
 export default function Home() {
+
     const [viewport, setViewport] = useState({
         height: "100%",
         width: "100%"
