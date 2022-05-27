@@ -29,14 +29,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const q = query(collection(db, "coordinates"));
-let data = {
-    "type": "FeatureCollection",
-    "features": []
-};
-let points = {
-    "type": "FeatureCollection",
-    "features": []
-}
+
 
 const INITIAL_VIEW_STATE = {
     latitude: 51.47,
@@ -53,66 +46,87 @@ export default function Home() {
         width: "100%"
     });
 
-    const [dataref, setDataref] = useState({});
+    const [points, setPoints] = useState({
+        "type": "FeatureCollection",
+        "features": []
+    });
 
+    let [data, setData] = useState({
+        "type": "FeatureCollection",
+        "features": []
+    });
     const dataRef = useRef(points);
 
     const [, updateState] = React.useState();
     const forceUpdate = useCallback(() => updateState({}), []);
 
     useEffect(() => {
+        let tempPoints = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+
+        let tempData = {
+            "type": "FeatureCollection",
+            "features": []
+        }
         onSnapshot(q, (snapshot) => {
             snapshot.docChanges().forEach((change, index) => {
-                console.log(change.doc.data())
                 if (change.type === "added") {
-                    dataRef.current.features.push({
+                
+
+                tempPoints.features.push({
+                    "type": "Feature",
+                    "properties": {
+                        "color": [7, 80, 133],
+                        "size": "5"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [change.doc.data().to[0], change.doc.data().to[1]]
+                    }
+                },
+                    {
                         "type": "Feature",
                         "properties": {
-                            "color": [7, 80, 133],
-                            "size": "5"
+                            "color": [111, 0, 103],
+                            "size": "2"
                         },
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [change.doc.data().to[0], change.doc.data().to[1]]
+                            "coordinates": [change.doc.data().from[0], change.doc.data().from[1]]
                         }
+                    })
+
+                tempData.features.push({
+
+                    "type": "Feature",
+                    "properties": {
+                        "scalerank": 2
                     },
-                        {
-                            "type": "Feature",
-                            "properties": {
-                                "color": [111, 0, 103],
-                                "size": "2"
-                            },
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": [change.doc.data().from[0], change.doc.data().from[1]]
-                            }
-                        })
-                    data.features.push({
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [[change.doc.data().from[0], change.doc.data().from[1]], [change.doc.data().to[0], change.doc.data().to[1]]]
+                    }
 
-                        "type": "Feature",
-                        "properties": {
-                            "scalerank": 2
-                        },
-                        "geometry": {
-                            "type": "LineString",
-                            "coordinates": []
-                        }
+                });
+                console.log(tempData)
+             
 
-                    });
+                setPoints({
+                    ...tempPoints
+                })
 
-                    data.features[index].geometry.coordinates.push([change.doc.data().from[0], change.doc.data().from[1]]);
-                    data.features[index].geometry.coordinates.push([change.doc.data().to[0], change.doc.data().to[1]])
-                    forceUpdate();
-                }
+                setData({
+                    ...tempData
+                })
+            }
                 forceUpdate();
             });
-            forceUpdate();
 
-            setDataref(dataRef.current);
-            console.log(dataRef.current)
+
         })
     }, []);
-
     const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic21hZGFsaW4iLCJhIjoiY2wzY3BjemRhMDBzbTNjbW9sdWc3cDg3YyJ9.wmPQQp-K_CjUVrtwdJPglQ';
     return (
         <div className={styles.container}>
@@ -122,12 +136,11 @@ export default function Home() {
             <div className={styles.box}>
                 <h1>Work from Anywhere <span>Deliver Everywhere</span></h1>
             </div>
-            {dataRef.current.features[0]?.geometry.coordinates[0] != null &&
+            {points != null &&
                 <DeckGL controller={true} initialViewState={INITIAL_VIEW_STATE}>
-
                     <GeoJsonLayer
                         id="points"
-                        data={dataref}
+                        data={points}
                         filled={true}
                         pointRadiusMinPixels={5}
                         pointRadiusScale={2000}
